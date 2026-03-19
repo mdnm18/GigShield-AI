@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Enums to match the architecture
+enum Role {
+  admin
+  worker
+}
+
+enum PolicyStatus {
+  active
+  inactive
+  pending
+}
+
+enum ClaimStatus {
+  submitted
+  under_review
+  approved
+  rejected
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  password  String    // Note: use bcrypt to hash this!
+  role      Role      @default(worker)
+  // otp       String?
+  // otpExpiry DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relationships
+  policies      Policy[]
+  claims        Claim[]
+  payments      Payment[]
+  notifications Notification[]
+}
+
+model Policy {
+  id              String       @id @default(uuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  weeklyPremium   Float
+  status          PolicyStatus @default(active)
+  riskScore       Float        @default(1.0)
+  startDate       DateTime
+  endDate         DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relationships
+  claims          Claim[]
+  payments        Payment[]
+}
+
+model Claim {
+  id              String       @id @default(uuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  policyId        String
+  policy          Policy       @relation(fields: [policyId], references: [id])
+  incidentDate    DateTime
+  description     String
+  amountRequested Float
+  amountApproved  Float?
+  status          ClaimStatus  @default(submitted)
+  gpsCoordinates  String?      // Simple string for latitude/longitude
+  fraudScore      Float        @default(0.0) // Flag for fake claims / GPS spoofing
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Payment {
+  id              String         @id @default(uuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  policyId        String?
+  policy          Policy?        @relation(fields: [policyId], references: [id])
+  amount          Float
+  status          PaymentStatus  @default(pending)
+  date            DateTime       @default(now())
+  description     String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Notification {
+  id              String       @id @default(uuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  title           String
+  message         String
+  read            Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
