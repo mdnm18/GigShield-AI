@@ -22,7 +22,7 @@ GigShield-AI is a comprehensive Next.js based **Policy and Claims Management Sys
 
 Below is a visual diagram of the architectural logic governing the GigShield-AI ecosystem and the general workflows of the application.
 
-![System Design Diagram](./public/devtrails_system_design.jpeg)
+![System Design Diagram](./frontend/public/devtrails_system_design.jpeg)
 
 *The system design illustrating the request flow between the Frontend Dashboards, Next.js Backend APIs, and the core PostgreSQL Database layer.*
 
@@ -32,7 +32,7 @@ Below is a visual diagram of the architectural logic governing the GigShield-AI 
 
 The structural backbone of the application involves distinct, highly integrated relational models governing Users, Policies, Claims, Payments, and Notifications.
 
-![Database Model Diagram](./public/model_devtraails.jpeg)
+![Database Model Diagram](./frontend/public/model_devtraails.jpeg)
 
 *Entity-Relationship visualization of the underlying database architecture implemented through Prisma.*
 
@@ -51,19 +51,19 @@ Make sure you have Node.js and a running PostgreSQL instance accessible locally 
    cd GigShield-AI
    ```
 
-2. **Install dependencies:**
+2. **Frontend Setup:**
    ```bash
+   cd frontend
    npm install
    ```
 
 3. **Configure Environment Variables:**
-   Create a `.env` file at the root of the project and add your database connection string and any necessary secrets:
+   Create a `.env` file inside the `frontend/` directory:
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/gigshield?schema=public"
    ```
 
 4. **Initialize the Database:**
-   Generate the Prisma TypeScript client and push the schema directly to your configured PostgreSQL database:
    ```bash
    npx prisma generate
    npx prisma db push
@@ -73,5 +73,12 @@ Make sure you have Node.js and a running PostgreSQL instance accessible locally 
    ```bash
    npm run dev
    ```
-   
+
+6. **Backend (ML) Setup:**
+   ```bash
+   cd ../backend
+   pip install -r requirements.txt
+   python main.py
+   ```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to explore the platform.
