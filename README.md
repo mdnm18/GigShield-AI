@@ -81,4 +81,3 @@ Make sure you have Node.js and a running PostgreSQL instance accessible locally 
    python main.py
    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to explore the platform.
