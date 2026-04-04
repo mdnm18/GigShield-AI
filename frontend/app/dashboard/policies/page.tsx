@@ -15,6 +15,10 @@ type Policy = {
 export default function PoliciesPage() {
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // ML Quote state
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteResult, setQuoteResult] = useState<{ weekly_premium: number; risk_score: number } | null>(null);
 
   useEffect(() => {
     fetch("/api/policies")
@@ -25,12 +29,57 @@ export default function PoliciesPage() {
       });
   }, []);
 
+  const getMLQuote = async () => {
+    setQuoteLoading(true);
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          // Customizing some features for the quote demo
+          Weatherconditions: "Stormy",
+          Delivery_Distance_km: 15.5
+        }),
+      });
+      const data = await res.json();
+      setQuoteResult(data);
+    } catch (e) {
+      console.error("ML Quote Error", e);
+    } finally {
+      setQuoteLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">My Policies</h1>
-        <p className="text-foreground/60 text-sm mt-1">View and manage your active policy coverages.</p>
+      <div className="flex justify-between items-end">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">My Policies</h1>
+          <p className="text-foreground/60 text-sm mt-1">View and manage your active policy coverages.</p>
+        </div>
+        <button 
+          onClick={getMLQuote}
+          disabled={quoteLoading}
+          className="glass-panel px-4 py-2 rounded-xl text-accent font-semibold text-sm hover:bg-accent/10 transition-all flex items-center gap-2 border-accent/30"
+        >
+          {quoteLoading ? "Calibrating..." : "Get AI Risk Quote"}
+        </button>
       </div>
+
+      {quoteResult && (
+        <div className="glass-panel p-6 rounded-2xl border-accent/30 bg-accent/5 animate-in slide-in-from-top duration-500">
+           <div className="flex justify-between items-center">
+             <div>
+               <h3 className="text-accent font-bold">Recommended Policy (AI Optimized)</h3>
+               <p className="text-xs text-foreground/60">Based on your current risk profile (Stormy Weather / Long Distance)</p>
+             </div>
+             <div className="text-right">
+                <span className="text-2xl font-black text-foreground">${quoteResult.weekly_premium.toFixed(2)}</span>
+                <p className="text-[10px] text-accent font-bold uppercase tracking-tighter">Risk Factor: {(quoteResult.risk_score * 100).toFixed(1)}%</p>
+             </div>
+           </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {loading ? (
