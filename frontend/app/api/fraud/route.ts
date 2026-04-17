@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-const ML_BACKEND_URL = process.env.ML_BACKEND_URL || 'http://localhost:5000';
+const ML_BACKEND_URL = process.env.ML_BACKEND_URL || 'http://localhost:5001';
 
 const DEFAULT_CLAIM_FEATURES = {
   'Delivery_person_Age': 30,

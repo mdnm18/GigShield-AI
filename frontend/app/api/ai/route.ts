@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const ML_BACKEND_URL = process.env.ML_BACKEND_URL || 'http://localhost:5000';
+const ML_BACKEND_URL = process.env.ML_BACKEND_URL || 'http://localhost:5001';
 
 const DEFAULT_PROFILE = {
   'Delivery_person_Age': 30,

@@ -6,7 +6,8 @@ datasource db {
   provider = "postgresql"
 }
 
-// Enums to match the architecture
+// ─── Enums ──────────────────────────────────────────────────
+
 enum Role {
   admin
   worker
@@ -16,13 +17,16 @@ enum PolicyStatus {
   active
   inactive
   pending
+  expired
 }
 
 enum ClaimStatus {
   submitted
   under_review
+  verified
   approved
   rejected
+  paid
 }
 
 enum PaymentStatus {
@@ -31,14 +35,30 @@ enum PaymentStatus {
   failed
 }
 
+enum EventType {
+  weather
+  aqi
+  traffic
+}
+
+enum EventSeverity {
+  low
+  moderate
+  high
+  critical
+}
+
+// ─── Models ─────────────────────────────────────────────────
+
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
   name      String
   password  String    // Note: use bcrypt to hash this!
   role      Role      @default(worker)
-  // otp       String?
-  // otpExpiry DateTime?
+  city      String?
+  lat       Float?
+  lng       Float?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -47,13 +67,19 @@ model User {
   claims        Claim[]
   payments      Payment[]
   notifications Notification[]
+  riskScores    RiskScore[]
+
+  @@index([email])
+  @@index([role])
 }
 
 model Policy {
   id              String       @id @default(uuid())
   userId          String
   user            User         @relation(fields: [userId], references: [id])
+  policyType      String       @default("parametric_weather")
   weeklyPremium   Float
+  coverageLimit   Float        @default(5000.0)
   status          PolicyStatus @default(active)
   riskScore       Float        @default(1.0)
   startDate       DateTime
@@ -64,6 +90,34 @@ model Policy {
   // Relationships
   claims          Claim[]
   payments        Payment[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Event {
+  id              String        @id @default(uuid())
+  type            EventType
+  severity        EventSeverity @default(moderate)
+  city            String
+  lat             Float?
+  lng             Float?
+  source          String        @default("system")   // weather_api, aqi_api, traffic_api, manual
+  description     String
+  rawData         String?       // JSON string of raw API data
+  triggered       Boolean       @default(false)
+  thresholdValue  Float?        // The value that triggered (e.g. rainfall mm, AQI index)
+  thresholdLimit  Float?        // The limit that was breached
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relationships
+  claims          Claim[]
+
+  @@index([city])
+  @@index([type])
+  @@index([triggered])
+  @@index([createdAt])
 }
 
 model Claim {
@@ -72,15 +126,27 @@ model Claim {
   user            User         @relation(fields: [userId], references: [id])
   policyId        String
   policy          Policy       @relation(fields: [policyId], references: [id])
+  eventId         String?
+  event           Event?       @relation(fields: [eventId], references: [id])
   incidentDate    DateTime
   description     String
   amountRequested Float
   amountApproved  Float?
+  lossHours       Float?       // AI-estimated loss hours
   status          ClaimStatus  @default(submitted)
   gpsCoordinates  String?      // Simple string for latitude/longitude
-  fraudScore      Float        @default(0.0) // Flag for fake claims / GPS spoofing
+  fraudScore      Float        @default(0.0)
+  aiNotes         String?      // AI reasoning for fraud/approval
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+
+  // Relationships
+  payment         Payment?
+
+  @@index([userId])
+  @@index([policyId])
+  @@index([status])
+  @@index([eventId])
 }
 
 model Payment {
@@ -89,21 +155,49 @@ model Payment {
   user            User           @relation(fields: [userId], references: [id])
   policyId        String?
   policy          Policy?        @relation(fields: [policyId], references: [id])
+  claimId         String?        @unique
+  claim           Claim?         @relation(fields: [claimId], references: [id])
   amount          Float
+  type            String         @default("payout")  // "premium_debit" or "payout"
   status          PaymentStatus  @default(pending)
+  transactionRef  String?        // Simulated payment reference
   date            DateTime       @default(now())
   description     String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([claimId])
 }
 
 model Notification {
   id              String       @id @default(uuid())
   userId          String
   user            User         @relation(fields: [userId], references: [id])
+  type            String       @default("info")  // "event_alert", "claim_update", "payment_confirmation", "info"
   title           String
   message         String
   read            Boolean      @default(false)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+model RiskScore {
+  id              String       @id @default(uuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  score           Float
+  factors         String?      // JSON string of risk factors
+  weatherRisk     Float        @default(0.0)
+  trafficRisk     Float        @default(0.0)
+  aqiRisk         Float        @default(0.0)
+  calculatedAt    DateTime     @default(now())
+
+  @@index([userId])
+  @@index([calculatedAt])
 }

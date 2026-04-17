@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
     // --- ML TRIGGER: Run Fraud Assessment ---
     try {
-      const mlUrl = process.env.ML_BACKEND_URL || 'http://localhost:5000';
+      const mlUrl = process.env.ML_BACKEND_URL || 'http://localhost:5001';
       const fraudCheckResponse = await fetch(`${mlUrl}/api/assess-fraud`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

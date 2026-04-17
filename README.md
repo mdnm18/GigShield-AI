@@ -1,83 +1,187 @@
-# GigShield-AI
+# 🚀 GigShield AI
+GigShield AI is an **AI-powered parametric insurance platform** designed for gig workers.  
+It automatically detects real-world disruptions (like rain, pollution, traffic), verifies them using AI, and provides **instant, zero-touch compensation**.
+---
+## 🎥 Demo Video
+👉 https://youtu.be/bOk4UYP9gq8
+---
+## 📊 Pitch Deck
+👉 https://drive.google.com/file/d/13-r52GXL8-urKho26dy9Nc57D4nC5DNm/view?usp=sharing
+---
+## 🌍 Problem Statement
+Gig workers face **income instability** due to unpredictable disruptions such as:
+- Weather (rain, heatwaves)
+- Pollution (high AQI)
+- Traffic restrictions
+- Local curfews
+They lose **20–30% of their income**, with no protection system in place.
+---
+## 💡 Solution
+GigShield AI introduces:
+- 📡 Real-time disruption detection  
+- 🤖 AI-powered risk scoring & fraud detection  
+- ⚡ Automatic claim generation (zero-touch)  
+- 💰 Instant payout system (simulated / integrated)  
+👉 No claims. No paperwork. Just protection.
+---
+## ✨ Key Features
+### 👷 Worker Portal
+- View real-time risk & premium
+- Subscribe to policies
+- Track claims & payouts
+- Receive alerts & notifications
+### 🛡️ Admin Dashboard
+- Monitor system performance
+- Analyze claims & fraud detection
+- Manage users & policies
+- Review and approve claims
+### 🤖 AI Engine
+- Risk Prediction Model
+- Fraud Detection Model
+- Income Loss Estimation
+### 📡 Event Detection System
+- Weather API integration
+- AQI API integration
+- Traffic data monitoring
+---
+## 🏗️ System Architecture
+![System Design](./frontend/public/devtrails_system_design.jpeg)
+**Flow:**
+Frontend → Backend APIs → AI Service → Database → External APIs  
+---
+## 🗄️ Database Design
+![Database Model](./frontend/public/model_devtraails.jpeg)
+**Core Entities:**
+- Users  
+- Policies  
+- Claims  
+- Payments  
+- Events  
+- Notifications  
+---
+## ⚙️ Tech Stack
+### Frontend
+- Next.js (App Router)
+- React (TypeScript)
+- Tailwind CSS
+### Backend
+- Next.js API Routes (TypeScript)
+- Prisma ORM
+### AI/ML
+- Python (FastAPI)
+- Scikit-learn
+- Pandas, NumPy
+### Database
+- PostgreSQL
+- Redis (optional caching)
+### APIs
+- OpenWeatherMap API
+- AQI API
+- Google Maps API
+### Cloud & DevOps (Planned / Partial)
+- AWS
+- Docker
+---
+## 🔁 Application Workflow
+1. Worker subscribes to a policy  
+2. System monitors real-time external data  
+3. Disruption detected (e.g., heavy rain)  
+4. AI verifies event + calculates loss  
+5. Claim generated automatically  
+6. Fraud check performed  
+7. Payment processed  
+---
+## 🧠 AI Integration
+- Risk Score → Dynamic premium calculation  
+- Fraud Detection → Identify abnormal claims  
+- Loss Prediction → Estimate payout amount  
+---
+## 💻 Local Setup Instructions
+### 🔹 Prerequisites
+- Node.js
+- Python 3.x
+- PostgreSQL
+---
+### 🔹 Clone Repository
+```bash
+git clone https://github.com/mdnm18/GigShield-AI.git
+cd GigShield-AI
 
-GigShield-AI is a comprehensive Next.js based **Policy and Claims Management System** tailored for the gig economy. It allows workers to securely purchase insurance policies, make payments, and submit claims, while providing a powerful admin dashboard to review claims, assess fraud risk, and govern the system.
+⸻
 
-## 🚀 Key Features
+🔹 Frontend Setup
 
-- **Worker Portal**: Specific interfaces allowing workers to subscribe to policies, submit claims (with GPS location tracking for verification), fulfill premium payments, and receive status notifications.
-- **Admin Dashboard**: Empowers administrators to review incoming claims, inspect automatically generated fraud scores, handle user networks, and manually approve or reject claims.
-- **Secure Authentication**: Workers use a seamless OTP-based login system for easy access, while admins utilize a dedicated secure authentication flow.
-- **Real-time Notifications**: Automated, real-time alerts update workers precisely when their claims are processed or actions are needed.
+cd frontend
+npm install
 
-## 🛠️ Tech Stack
+Create .env:
 
-- **Frontend & Backend**: [Next.js (App Router)](https://nextjs.org/)
-- **Database ORM**: [Prisma](https://www.prisma.io/)
-- **Database Engine**: [PostgreSQL](https://www.postgresql.org/)
-- **Styling**: Tailwind CSS & Lucide React Icons
+DATABASE_URL="postgresql://user:password@localhost:5432/gigshield"
+
+Run:
+
+npx prisma generate
+npx prisma db push
+npm run dev
+
+⸻
+
+🔹 AI Backend Setup
+
+cd backend
+pip install -r requirements.txt
+python main.py
+
+⸻
+
+📦 Project Structure
+
+GigShield-AI/
+│
+├── frontend/        # Next.js App (UI + API)
+├── backend/         # Python AI Service
+├── prisma/          # Database schema
+├── public/          # Assets & diagrams
+
+⸻
+
+🚧 Future Enhancements
+
+* 💳 Real payment integration (Razorpay / UPI)
+* 📱 Mobile app version
+* 🌍 Multi-city deployment
+* 📊 Advanced analytics dashboard
+* ☁️ Full cloud deployment (AWS)
+
+⸻
+
+🏆 Innovation Highlights
+
+* Zero-touch claims
+* Real-time parametric triggers
+* AI-driven pricing
+* Fraud detection using location intelligence
+
+⸻
+
+👨‍💻 Team
+
+Team Quants
+SRM Institute of Science and Technology
+
+⸻
+
+📌 Submission Details
+
+* ✅ Source Code: GitHub Repository
+* ✅ Pitch Deck: Included above
+* ✅ Demo Video: Included above
+* ✅ Fully working prototype with AI integration
+
+⸻
+
+📄 License
+
+This project is for academic and hackathon purposes.
 
 ---
-
-## 🏗️ Architecture & System Design
-
-Below is a visual diagram of the architectural logic governing the GigShield-AI ecosystem and the general workflows of the application.
-
-![System Design Diagram](./frontend/public/devtrails_system_design.jpeg)
-
-*The system design illustrating the request flow between the Frontend Dashboards, Next.js Backend APIs, and the core PostgreSQL Database layer.*
-
----
-
-## 🗄️ Database Models
-
-The structural backbone of the application involves distinct, highly integrated relational models governing Users, Policies, Claims, Payments, and Notifications.
-
-![Database Model Diagram](./frontend/public/model_devtraails.jpeg)
-
-*Entity-Relationship visualization of the underlying database architecture implemented through Prisma.*
-
----
-
-## 💻 Getting Started
-
-### Prerequisites
-Make sure you have Node.js and a running PostgreSQL instance accessible locally or on the cloud.
-
-### Setup Instructions
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/mdnm18/GigShield-AI.git
-   cd GigShield-AI
-   ```
-
-2. **Frontend Setup:**
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-3. **Configure Environment Variables:**
-   Create a `.env` file inside the `frontend/` directory:
-   ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/gigshield?schema=public"
-   ```
-
-4. **Initialize the Database:**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-
-5. **Start the Development Server:**
-   ```bash
-   npm run dev
-   ```
-
-6. **Backend (ML) Setup:**
-   ```bash
-   cd ../backend
-   pip install -r requirements.txt
-   python main.py
-   ```
-
